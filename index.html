@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>HumanAIGC</title>
+    <style></style>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/dayjs@1/dayjs.min.js"></script>
+    <!-- <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script> -->
+    <!-- <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"
+    /> -->
+
+    <style>
+      @font-face {
+        font-family: "TitleFont";
+        font-weight: 700;
+        src: url("./assets/QSFhnFcNIO8b.woff2") format("woff2"),
+          url("./assets/QSFhnFcNIO8b.woff2") format("woff");
+        font-display: swap;
+      }
+      body {
+        margin: 0;
+        padding: 0;
+        height: 100vh;
+        background-image: url(./assets/background.png);
+        background-size: cover;
+        background-repeat: no-repeat;
+        background-color: #eee;
+        overflow: hidden;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      .top-card {
+        background-size: contain;
+        background-position: center;
+        background-image: url(./assets/home_banner_bg.png);
+        background-repeat: no-repeat;
+        background-position: right;
+        height: 20vh;
+
+        padding-left: 44px;
+
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        justify-content: center;
+      }
+      .top-card .title {
+        font-size: 50px;
+        font-family: TitleFont;
+        color: rgb(30, 30, 30);
+      }
+      ::-webkit-scrollbar {
+        display: none;
+      }
+      .top-card .subtitle {
+        font-size: 20px;
+        color: rgb(108, 108, 108);
+      }
+      .content {
+        height: 80vh;
+        overflow: auto;
+        padding-top: 20px;
+        padding-bottom: 100px;
+        max-width: 900px;
+        margin: 0 auto;
+      }
+      .repo-card {
+        background-color: #fff;
+        border-radius: 20px;
+        padding: 20px 24px 20px;
+        margin: 0 44px;
+        cursor: pointer;
+      }
+      .repo-card .entry-header h2 {
+        font-size: 24px;
+        line-height: 1.3;
+        margin: 0;
+        font-weight: 600;
+      }
+      .repo-card .description {
+        margin: 8px 0;
+        color: rgb(108, 108, 108);
+        font-size: 14px;
+        line-height: 1.6;
+        overflow: hidden;
+        display: -webkit-box;
+        -webkit-box-orient: vertical;
+        -webkit-line-clamp: 2;
+      }
+      .repo-card + .repo-card {
+        margin-top: 24px;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="app">
+      <div class="top-card">
+        <div class="title">HumanAIGC</div>
+        <div class="subtitle">Bringing Digital Humans to Life</div>
+      </div>
+      <div class="content">
+        <article
+          v-for="repo in showData"
+          class="repo-card"
+          @click="jumpToRepo(repo)"
+        >
+          <header class="entry-header"><h2>{{repo.name}}</h2></header>
+          <div class="description">{{ repo.description }}</div>
+          <!-- <div
+            v-html="readmes.find(item => item.repo === repo.name).readme"
+          ></div> -->
+          <footer>
+            {{ repo.updated_at }} ·
+            <strong>Stars:</strong> {{repo.stars}}
+          </footer>
+        </article>
+      </div>
+    </div>
+    <script>
+      const { createApp, ref } = Vue;
+
+      createApp({
+        setup() {
+          const repos = ref([]);
+          const readmes = ref([]);
+          const showData = ref([]);
+          fetch("./data/readmes.json")
+            .then((res) => res.json())
+            .then((data) => {
+              console.log(data);
+              readmes.value = data;
+            });
+          fetch("./data/repos.json")
+            .then((res) => res.json())
+            .then((data) => {
+              console.log(data);
+              data.sort((a, b) =>
+                dayjs(a.updated_at).isBefore(dayjs(b.updated_at)) ? 1 : -1
+              );
+              repos.value = data;
+              showData.value = data.map((repo) => {
+                return {
+                  name: repo.name,
+                  description: repo.description,
+                  stars: repo.stargazers_count,
+                  topics: repo.topics.join(", "),
+                  updated_at: dayjs(repo.updated_at).format("MMMM D, YYYY"),
+                };
+              });
+            });
+
+          const jumpToRepo = (repo) => {
+            const realRepo = repos.value.find((r) => r.name === repo.name);
+            if (realRepo.html_url) {
+              window.open(realRepo.html_url);
+            }
+          };
+          return { showData, readmes, jumpToRepo };
+        },
+      }).mount("#app");
+    </script>
+  </body>
+</html>
