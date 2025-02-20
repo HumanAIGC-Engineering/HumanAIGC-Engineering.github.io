@@ -3,7 +3,7 @@ const axios = require("axios");
 const marked = require("marked");
 
 // 定义需要获取的用户和仓库
-const users = ["HumanAIGC", "HumanAIGC-Engineering"]; // 替换为实际的 GitHub 用户名
+const users = ["HumanAIGC-Engineering"]; // 替换为实际的 GitHub 用户名
 const token = process.env.GITHUB_TOKEN; // 使用 GitHub Token 进行身份验证
 
 async function fetchReadme(owner, repo) {
