@@ -129,13 +129,13 @@
           const repos = ref([]);
           const readmes = ref([]);
           const showData = ref([]);
-          fetch("./data/readmes.json")
+          fetch("./data/readmes.json?t=" + Date.now())
             .then((res) => res.json())
             .then((data) => {
               console.log(data);
               readmes.value = data;
             });
-          fetch("./data/repos.json")
+          fetch("./data/repos.json?t=" + Date.now())
             .then((res) => res.json())
             .then((data) => {
               console.log(data);
