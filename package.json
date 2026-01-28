@@ -1,6 +1,6 @@
 {
   "dependencies": {
-    "axios": "^1.13.3",
+    "axios": "^1.13.4",
     "marked": "^17.0.1"
   }
 }
